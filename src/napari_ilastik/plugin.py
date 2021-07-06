@@ -3,7 +3,7 @@ from typing import Any
 import numpy
 import sparse
 from napari import Viewer
-from napari._qt.containers.layers import QtLayerList
+from napari._qt.containers import QtLayerList
 from napari.layers import Image, Labels, Layer
 from napari.qt.threading import thread_worker
 from napari_plugin_engine import napari_hook_implementation
@@ -133,7 +133,7 @@ class PixelClassificationWidget(QWidget):
         self._features_dialog = features_dialog
         self._run_button = run_button
         self._progress_bar = progress_bar
-        self._color = None
+        self._labels_seed = None
         self._update_widgets()
 
     def _update_widgets(self):
@@ -153,7 +153,7 @@ class PixelClassificationWidget(QWidget):
             )
         )
 
-        self._color = labels_layer.color.copy()
+        self._labels_seed = labels_layer.seed
 
         worker = _pixel_classification(image_layer.data, labels_layer.data, features)
         worker.finished.connect(lambda: self._set_enabled(True))
@@ -168,14 +168,15 @@ class PixelClassificationWidget(QWidget):
         try:
             layer = self._viewer.layers[self.OUTPUT_LAYER_PARAMS["name"]]
             layer.data = data
-            layer.color = self._color
+            layer.seed = self._labels_seed
         except KeyError:
             layer = self._viewer.add_labels(
-                data, color=self._color, **self.OUTPUT_LAYER_PARAMS
+                data, seed=self._labels_seed, **self.OUTPUT_LAYER_PARAMS
             )
+            layer.color_mode = "AUTO"
             layer.editable = False
         finally:
-            self._color = None
+            self._labels_seed = None
 
 
 @napari_hook_implementation
