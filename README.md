@@ -1,26 +1,45 @@
 # napari-ilastik
 
-## Development Setup
+[Napari][napari] plugin for interactive pixel classification.
+Designed to be similar to pixel classification workflow in [classic ilastik][ilastik].
 
-In the project root directory:
+## Installation
 
-```shell
-conda create --yes \
-    --name napari-ilastik \
-    --strict-channel-priority \
-    --channel ilastik-forge \
-    --channel conda-forge \
-    --channel nodefaults \
-    'python=3.7' fastfilters
-conda activate napari-ilastik
-pip install --editable .[dev,test]
-```
+1. Download and install [miniconda][miniconda].
 
-## Run Example Script
+2. Create a new conda environment:
+   * Windows:
+     ```shell
+     conda create --name napari-ilastik --file conda-win-64.lock
+     ```
+   * Linux:
+     ```shell
+     conda create --name napari-ilastik --file conda-linux-64.lock
+     ```
+   * macOS:
+     ```shell
+     conda create --name napari-ilastik --file conda-osx-64.lock
+     ```
 
-In the project root directory:
+3. Activate the environment:
+   ```shell
+   conda activate napari-ilastik
+   ```
 
-```shell
-conda activate napari-ilastik
-python examples/simple_labeling.py
-```
+4. Install napari and this plugin into the active environment:
+   ```shell
+   pip install --editable .
+   ```
+
+5. Start napari, and select this plugin in the _Plugins_ menu:
+   ```shell
+   napari
+   ```
+   Alternatively, try an interactive example:
+   ```shell
+   python examples/simple_labeling.py
+   ```
+
+[napari]: https://napari.org/
+[ilastik]: https://www.ilastik.org/
+[miniconda]: https://docs.conda.io/en/latest/miniconda.html
