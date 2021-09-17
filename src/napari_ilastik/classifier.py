@@ -11,7 +11,12 @@ def _fit_with(func, X, y, **kwargs):
 
 
 def _predict_with(func, X):
-    return func(X.reshape((-1, X.shape[-1]))).reshape(X.shape[:-1])
+    *image_shape, n_features = X.shape
+    preds = func(X.reshape((-1, n_features)))
+    if preds.size == X.size:
+        return preds.reshape(image_shape)
+    else:
+        return preds.reshape((*image_shape, -1))
 
 
 class NDSparseClassifier(

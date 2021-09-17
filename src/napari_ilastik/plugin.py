@@ -8,7 +8,16 @@ from napari.layers import Image, Labels, Layer
 from napari.qt.threading import thread_worker
 from napari_plugin_engine import napari_hook_implementation
 from qtpy.QtCore import QModelIndex, QSortFilterProxyModel, Qt
-from qtpy.QtWidgets import QComboBox, QFormLayout, QProgressBar, QPushButton, QWidget
+from qtpy.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QFormLayout,
+    QGroupBox,
+    QProgressBar,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+)
 from sklearn.ensemble import RandomForestClassifier
 
 from napari_ilastik import filters
@@ -23,7 +32,7 @@ def _pixel_classification(image, labels, features):
     sparse_labels = sparse.COO.from_numpy(numpy.asarray(labels.data))
     clf = NDSparseClassifier(RandomForestClassifier())
     clf.fit(feature_map, sparse_labels)
-    return clf.predict(feature_map)
+    return numpy.moveaxis(clf.predict_proba(feature_map), -1, 0)
 
 
 filter_names = {
@@ -76,7 +85,8 @@ class LabelsLayerModel(LayerModel):
 
 
 class PixelClassificationWidget(QWidget):
-    OUTPUT_LAYER_PARAMS = dict(name="ilastik segmentation", opacity=0.75)
+    SEG_LAYER_PARAMS = dict(name="ilastik-segmentation", opacity=1)
+    PROBA_LAYER_PARAMS = dict(name="ilastik-probabilities", opacity=0.75)
 
     def __init__(self, napari_viewer: Viewer, parent=None):
         super().__init__(parent)
@@ -110,6 +120,15 @@ class PixelClassificationWidget(QWidget):
         features_button = QPushButton("&Features")
         features_button.clicked.connect(features_dialog.open)
 
+        output_type_group = QGroupBox("Output Type")
+        segmentation_button = QCheckBox("Segmentation", clicked=self._update_widgets)
+        probabilities_button = QCheckBox("Probabilities", clicked=self._update_widgets)
+        segmentation_button.setChecked(True)
+        output_type_layout = QVBoxLayout()
+        output_type_layout.addWidget(segmentation_button)
+        output_type_layout.addWidget(probabilities_button)
+        output_type_group.setLayout(output_type_layout)
+
         run_button = QPushButton("&Run")
         run_button.setEnabled(False)
         run_button.clicked.connect(self._on_run_clicked)
@@ -123,6 +142,7 @@ class PixelClassificationWidget(QWidget):
         layout.addRow("&Image:", image_combo)
         layout.addRow("&Labels:", labels_combo)
         layout.addRow(features_button)
+        layout.addRow(output_type_group)
         layout.addRow(run_button)
         layout.addRow(progress_bar)
         self.setLayout(layout)
@@ -131,14 +151,20 @@ class PixelClassificationWidget(QWidget):
         self._image_combo = image_combo
         self._labels_combo = labels_combo
         self._features_dialog = features_dialog
+        self._segmentation_button = segmentation_button
+        self._probabilities_button = probabilities_button
         self._run_button = run_button
         self._progress_bar = progress_bar
         self._labels_seed = None
         self._update_widgets()
 
     def _update_widgets(self):
-        combos = self._image_combo, self._labels_combo
-        self._run_button.setEnabled(all(c.currentData() for c in combos))
+        layer_combos = self._image_combo, self._labels_combo
+        output_buttons = self._segmentation_button, self._probabilities_button
+        self._run_button.setEnabled(
+            all(c.currentData() for c in layer_combos)
+            and any(b.isChecked() for b in output_buttons)
+        )
 
     def _on_run_clicked(self):
         self._set_enabled(False)
@@ -157,26 +183,40 @@ class PixelClassificationWidget(QWidget):
 
         worker = _pixel_classification(image_layer.data, labels_layer.data, features)
         worker.finished.connect(lambda: self._set_enabled(True))
-        worker.returned.connect(self._update_output_layer)
+        worker.returned.connect(self._update_output_layers)
         worker.start()
 
     def _set_enabled(self, value):
         self._run_button.setEnabled(value)
         self._progress_bar.setVisible(not value)
 
-    def _update_output_layer(self, data):
+    def _update_output_layers(self, proba):
+        if self._segmentation_button.isChecked():
+            self._update_seg_layer(proba)
+        if self._probabilities_button.isChecked():
+            self._update_proba_layer(proba)
+
+    def _update_seg_layer(self, proba):
+        data = numpy.argmax(proba, axis=-1).astype(numpy.uint8)
         try:
-            layer = self._viewer.layers[self.OUTPUT_LAYER_PARAMS["name"]]
+            layer = self._viewer.layers[self.SEG_LAYER_PARAMS["name"]]
             layer.data = data
             layer.seed = self._labels_seed
         except KeyError:
             layer = self._viewer.add_labels(
-                data, seed=self._labels_seed, **self.OUTPUT_LAYER_PARAMS
+                data, seed=self._labels_seed, **self.SEG_LAYER_PARAMS
             )
             layer.color_mode = "AUTO"
             layer.editable = False
         finally:
             self._labels_seed = None
+
+    def _update_proba_layer(self, proba):
+        try:
+            layer = self._viewer.layers[self.PROBA_LAYER_PARAMS["name"]]
+            layer.data = proba
+        except KeyError:
+            layer = self._viewer.add_image(proba, **self.PROBA_LAYER_PARAMS)
 
 
 @napari_hook_implementation
