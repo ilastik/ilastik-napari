@@ -1,4 +1,7 @@
-*.egg-info/
-.pytest_cache/
+/.nox/
+/.pytest_cache/
+/build/
+/dist/
+
 __pycache__/
-build/
+*.egg-info/
