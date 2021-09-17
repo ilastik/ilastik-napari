@@ -28,7 +28,7 @@ Designed to be similar to pixel classification workflow in [classic ilastik][ila
 
 4. Install napari and this plugin into the active environment:
    ```shell
-   pip install --editable .
+   python -m pip install --editable .
    ```
 
 5. Start napari, and select this plugin in the _Plugins_ menu:
