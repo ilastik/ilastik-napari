@@ -1,0 +1,27 @@
+{% set data = load_setup_py_data() %}
+
+package:
+  name: napari-ilastik
+  version: {{ data["version"] }}
+
+source:
+  path: ..
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install -vv --no-deps --ignore-installed .
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - fastfilters
+    - napari
+    - napari-plugin-engine
+    - numpy
+    - python
+    - qtpy
+    - scikit-learn
+    - sparse
