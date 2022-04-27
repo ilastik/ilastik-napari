@@ -1,8 +1,8 @@
-{% set data = load_setup_py_data() %}
+{% set setup = load_setup_py_data() %}
 
 package:
   name: napari-ilastik
-  version: {{ data["version"] }}
+  version: {{ setup.version }}
 
 source:
   path: ..
@@ -10,18 +10,24 @@ source:
 build:
   noarch: python
   number: 0
-  script: {{ PYTHON }} -m pip install -vv --no-deps --ignore-installed .
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
 
 requirements:
   host:
     - pip
-    - python
+    - python>=3.7
+    - setuptools>=61
+    - setuptools-scm>=6.4
   run:
     - fastfilters
+    - importlib-metadata
     - napari
-    - napari-plugin-engine
     - numpy
-    - python
     - qtpy
     - scikit-learn
     - sparse
+
+about:
+  home: https://github.com/ilastik/napari-ilastik
+  license: MIT
+  summary: ilastik plugin for napari

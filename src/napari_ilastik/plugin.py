@@ -6,7 +6,6 @@ from napari import Viewer
 from napari._qt.containers import QtLayerList
 from napari.layers import Image, Labels, Layer
 from napari.qt.threading import thread_worker
-from napari_plugin_engine import napari_hook_implementation
 from qtpy.QtCore import QModelIndex, QSortFilterProxyModel, Qt
 from qtpy.QtWidgets import (
     QCheckBox,
@@ -197,7 +196,7 @@ class PixelClassificationWidget(QWidget):
             self._update_proba_layer(proba)
 
     def _update_seg_layer(self, proba):
-        data = numpy.argmax(proba, axis=-1).astype(numpy.uint8)
+        data = numpy.argmax(proba, axis=0).astype(numpy.uint8) + 1
         try:
             layer = self._viewer.layers[self.SEG_LAYER_PARAMS["name"]]
             layer.data = data
@@ -217,8 +216,3 @@ class PixelClassificationWidget(QWidget):
             layer.data = proba
         except KeyError:
             layer = self._viewer.add_image(proba, **self.PROBA_LAYER_PARAMS)
-
-
-@napari_hook_implementation
-def napari_experimental_provide_dock_widget():
-    return PixelClassificationWidget, {"name": "ilastik Pixel Classification"}

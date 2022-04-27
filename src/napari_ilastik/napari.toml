@@ -1,0 +1,11 @@
+name = "napari-ilastik"
+display_name = "ilastik plugin for napari"
+
+[[contributions.commands]]
+id = "napari-ilastik.pixel_classification"
+title = "Open ilastik Pixel Classification Widget"
+python_name = "napari_ilastik.plugin:PixelClassificationWidget"
+
+[[contributions.widgets]]
+command = "napari-ilastik.pixel_classification"
+display_name = "ilastik Pixel Classification"

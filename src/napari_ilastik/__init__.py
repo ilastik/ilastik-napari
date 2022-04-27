@@ -1,1 +1,5 @@
-__version__ = "0.2.dev0"
+from importlib.metadata import version
+
+__version__ = version("napari-ilastik")
+
+del version
