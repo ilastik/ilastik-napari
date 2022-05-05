@@ -19,10 +19,10 @@ from qtpy.QtWidgets import (
 )
 from sklearn.ensemble import RandomForestClassifier
 
-from napari_ilastik import filters
-from napari_ilastik.classifier import NDSparseClassifier
-from napari_ilastik.filters import FilterSet
-from napari_ilastik.gui import CheckboxTableDialog, rc_pairs
+from ilastik.napari import filters
+from ilastik.napari.classifier import NDSparseClassifier
+from ilastik.napari.filters import FilterSet
+from ilastik.napari.gui import CheckboxTableDialog, rc_pairs
 
 
 @thread_worker
