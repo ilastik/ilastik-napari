@@ -15,7 +15,7 @@ def main():
         labels_layer.paint((100, y), new_label=2, refresh=False)
     labels_layer.refresh()
 
-    viewer.window.add_plugin_dock_widget("napari-ilastik")
+    viewer.window.add_plugin_dock_widget("ilastik-napari")
     napari.run()
 
 
