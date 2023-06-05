@@ -5,31 +5,23 @@ Designed to be similar to the pixel classification workflow in [classic ilastik]
 
 ## Installation
 
-Currently, this plugin requires you to use a conda environment.
-If you haven't used conda before, please read [conda user guide][conda-user-guide].
+This plugin requires you to use a _conda_ environment. The environment manager conda comes in a few different forms.
+If you haven't used conda before, you can find more information in the [conda user guide][conda-user-guide].
+You can use whichever variant you prefer, as the resulting environment should be the same, but we recommend the [_mambaforge_][mambaforge] variant as it is usually the fastest.
+When using mambaforge, the `mamba` command usually replaces the `conda` command one would otherwise use.
 
-Instad of the default [_miniconda_][miniconda] installation, we highly recommend to use [_mambaforge_][mambaforge].
-It has better default settings, and the `mamba` command, which is an (almost) drop-in replacement for `conda`.
-
-After installing _mambaforge_, create a new environment with this plugin installed:
-   ```shell
-   mamba create -y -c ilastik-forge -n my-napari-env napari-ilastik
-   ```
-
-Finally, launch napari in the new environment.
-   ```shell
-   conda activate my-napari-env
-   napari
-   ```
-
-### Napari Hub and pip
-
-You can also install this plugin via Napari Hub or _pip_. However, in this case you must do that inside a conda environment with the _fastfilters_ package installed:
+Once you have installed mambaforge, set up a conda environment with the _fastfilters_ package, and then use pip to install _ilastik-napari_:
 ```shell
-mamba create -y -c ilastik-forge -n my-napari-env fastfilters
-conda activate my-napari-env
+mamba create -y -c ilastik-forge -c conda-forge -n my-napari-env fastfilters
+mamba activate my-napari-env
 pip install ilastik-napari
 ```
+
+Finally, run napari:
+```shell
+napari
+```
+You should be able to find the ilastik-napari plugin in the Plugins menu.
 
 ## Usage
 
