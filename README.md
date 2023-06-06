@@ -10,9 +10,9 @@ If you haven't used conda before, you can find more information in the [conda us
 You can use whichever variant you prefer, as the resulting environment should be the same, but we recommend the [_mambaforge_][mambaforge] variant as it is usually the fastest.
 When using mambaforge, the `mamba` command usually replaces the `conda` command one would otherwise use.
 
-Once you have installed mambaforge, set up a conda environment with the _fastfilters_ package, and then use pip to install _ilastik-napari_:
+Once you have installed mambaforge, set up a conda environment with napari and the _fastfilters_ package, and then use pip to install _ilastik-napari_:
 ```shell
-mamba create -y -c ilastik-forge -c conda-forge -n my-napari-env fastfilters
+mamba create -y -c ilastik-forge -c conda-forge -n my-napari-env napari fastfilters
 mamba activate my-napari-env
 pip install ilastik-napari
 ```
