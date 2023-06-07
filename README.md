@@ -21,7 +21,11 @@ Finally, run napari:
 ```shell
 napari
 ```
-You should be able to find the ilastik-napari plugin in the Plugins menu.
+That's it! You should be able to find the ilastik-napari plugin in the Plugins menu.
+
+If you prefer to __install napari using pip__ instead of conda:
+Make sure to install `napari[all]`.
+Unless you want to [choose a PyQt implementation other than _PyQt5_][napari-pyqt], in which case you should leave out the `[all]` extra.
 
 ## Usage
 
@@ -93,3 +97,4 @@ python -m twine upload --repository testpypi dist/*
 [miniconda]: https://docs.conda.io/en/latest/miniconda.html
 [mambaforge]: https://github.com/conda-forge/miniforge#mambaforge
 [napari-quickstart]: https://napari.org/tutorials/fundamentals/quick_start.html
+[napari-pyqt]: https://napari.org/stable/plugins/best_practices.html#don-t-include-pyside2-or-pyqt5-in-your-plugin-s-dependencies
