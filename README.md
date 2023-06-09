@@ -10,9 +10,9 @@ If you haven't used conda before, you can find more information in the [conda us
 You can use whichever variant you prefer, as the resulting environment should be the same, but we recommend the [_mambaforge_][mambaforge] variant as it is usually the fastest.
 When using mambaforge, the `mamba` command usually replaces the `conda` command one would otherwise use.
 
-Once you have installed mambaforge, set up a conda environment with the _fastfilters_ package, and then use pip to install _ilastik-napari_:
+Once you have installed mambaforge, set up a conda environment with napari and the _fastfilters_ package, and then use pip to install _ilastik-napari_:
 ```shell
-mamba create -y -c ilastik-forge -c conda-forge -n my-napari-env fastfilters
+mamba create -y -c ilastik-forge -c conda-forge -n my-napari-env napari fastfilters
 mamba activate my-napari-env
 pip install ilastik-napari
 ```
@@ -21,7 +21,11 @@ Finally, run napari:
 ```shell
 napari
 ```
-You should be able to find the ilastik-napari plugin in the Plugins menu.
+That's it! You should be able to find the ilastik-napari plugin in the Plugins menu.
+
+If you prefer to __install napari using pip__ instead of conda:
+Make sure to install `napari[all]`.
+Unless you want to [choose a PyQt implementation other than _PyQt5_][napari-pyqt], in which case you should leave out the `[all]` extra.
 
 ## Usage
 
@@ -93,3 +97,4 @@ python -m twine upload --repository testpypi dist/*
 [miniconda]: https://docs.conda.io/en/latest/miniconda.html
 [mambaforge]: https://github.com/conda-forge/miniforge#mambaforge
 [napari-quickstart]: https://napari.org/tutorials/fundamentals/quick_start.html
+[napari-pyqt]: https://napari.org/stable/plugins/best_practices.html#don-t-include-pyside2-or-pyqt5-in-your-plugin-s-dependencies
