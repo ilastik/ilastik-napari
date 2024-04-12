@@ -2,8 +2,9 @@ from typing import Any
 
 import numpy
 import sparse
+from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from napari import Viewer
-from napari._qt.containers import QtLayerList
+from napari.components import LayerList
 from napari.layers import Image, Labels, Layer
 from napari.qt.threading import thread_worker
 from qtpy.QtCore import QModelIndex, QSortFilterProxyModel, Qt
@@ -54,9 +55,13 @@ scale_list = (0.3, 0.7, 1.0, 1.6, 3.5, 5.0, 10.0)
 
 
 class LayerModel(QSortFilterProxyModel):
-    def __init__(self, layers: QtLayerList, parent=None):
+    def __init__(self, layers: LayerList, parent=None):
         super().__init__(parent)
-        self.setSourceModel(layers)
+        self.setSourceModel(QStandardItemModel())
+        self.napari_layers = layers
+        self.update_model()
+        self.napari_layers.events.inserted.connect(self.update_model)
+        self.napari_layers.events.removed.connect(self.update_model)
 
     def filterAcceptsRow(self, row: int, parent: QModelIndex) -> bool:
         model = self.sourceModel()
@@ -71,6 +76,14 @@ class LayerModel(QSortFilterProxyModel):
         if role in (Qt.DisplayRole, Qt.DecorationRole, Qt.UserRole):
             return super().data(index, role)
         return None
+
+    def update_model(self):
+        model = self.sourceModel()
+        model.clear()
+        for layer in self.napari_layers:
+            item = QStandardItem(layer.name)
+            item.setData(layer, Qt.UserRole)
+            model.appendRow(item)
 
 
 class ImageLayerModel(LayerModel):
@@ -90,7 +103,7 @@ class PixelClassificationWidget(QWidget):
     def __init__(self, napari_viewer: Viewer, parent=None):
         super().__init__(parent)
 
-        layer_model = napari_viewer.window.qt_viewer.layers.model()
+        layer_model = napari_viewer.layers
 
         image_combo = QComboBox()
         image_combo.setModel(ImageLayerModel(layer_model, self))
