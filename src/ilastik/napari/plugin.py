@@ -26,7 +26,6 @@ from ilastik.napari.filters import FilterSet
 from ilastik.napari.gui import CheckboxTableDialog, rc_pairs
 
 
-# TODO: scale using dask
 @thread_worker
 def _pixel_classification(image, labels, features):
     feature_map = features.transform(numpy.asarray(image.data))
