@@ -167,7 +167,6 @@ class PixelClassificationWidget(QWidget):
         self._probabilities_button = probabilities_button
         self._run_button = run_button
         self._progress_bar = progress_bar
-        self._labels_seed = None
         self._update_widgets()
 
     def _update_widgets(self):
@@ -191,8 +190,6 @@ class PixelClassificationWidget(QWidget):
             )
         )
 
-        self._labels_seed = labels_layer.seed
-
         worker = _pixel_classification(image_layer.data, labels_layer.data, features)
         worker.finished.connect(lambda: self._set_enabled(True))
         worker.returned.connect(self._update_output_layers)
@@ -213,15 +210,10 @@ class PixelClassificationWidget(QWidget):
         try:
             layer = self._viewer.layers[self.SEG_LAYER_PARAMS["name"]]
             layer.data = data
-            layer.seed = self._labels_seed
         except KeyError:
-            layer = self._viewer.add_labels(
-                data, seed=self._labels_seed, **self.SEG_LAYER_PARAMS
-            )
+            layer = self._viewer.add_labels(data, **self.SEG_LAYER_PARAMS)
             layer.color_mode = "AUTO"
             layer.editable = False
-        finally:
-            self._labels_seed = None
 
     def _update_proba_layer(self, proba):
         try:
