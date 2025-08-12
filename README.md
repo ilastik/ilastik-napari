@@ -12,8 +12,8 @@ When using mambaforge, the `mamba` command usually replaces the `conda` command 
 
 Once you have installed mambaforge, set up a conda environment with napari and the _fastfilters_ package, and then use pip to install _ilastik-napari_:
 ```shell
-mamba create -y -c ilastik-forge -c conda-forge -n my-napari-env napari fastfilters
-mamba activate my-napari-env
+conda create -y -c ilastik-forge -c conda-forge -n my-napari-env napari pyqt=5.51 fastfilters sparse qtpy scikit-learn
+conda activate my-napari-env
 pip install ilastik-napari
 ```
 
@@ -71,7 +71,7 @@ As a prerequisite, make sure you understand the [napari basics][napari-quickstar
 
 Create a development environment:
 ```
-mamba create -y -n ilastik-napari-dev -c ilastik-forge fastfilters setuptools-scm conda-build anaconda-client
+conda create -y -n ilastik-napari-dev -c ilastik-forge fastfilters pyqt=5.51 fastfilters sparse qtpy scikit-learn setuptools-scm conda-build anaconda-client
 conda activate napari-ilastik-dev
 pip install -e .
 ```
@@ -79,7 +79,7 @@ pip install -e .
 Build conda package:
 ```
 conda activate napari-ilastik-dev
-mamba build -c ilastik-forge conda-recipe
+conda build -c ilastik-forge conda-recipe
 anaconda upload /path/to/the/new/package.tar.bz2
 ```
 
